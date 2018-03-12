@@ -1,0 +1,137 @@
+% Notes and exercises from The Lambda Calculus by Barendregt
+% By John Peloquin
+\documentclass[letterpaper,12pt]{article}
+\usepackage{amsmath,amssymb,amsthm,enumitem,fourier}
+
+\newcommand{\lam}{\lambda}
+\newcommand{\Lam}{\Lambda}
+
+\newcommand{\inc}{\mathrel{\sharp}}
+\newcommand{\sub}{\mapsto}
+
+\newcommand{\comb}[1]{\mathbf{#1}}
+\newcommand{\I}{\comb{I}}
+\newcommand{\K}{\comb{K}}
+\renewcommand{\S}{\comb{S}}
+\newcommand{\Y}{\comb{Y}}
+
+\DeclareMathOperator{\FV}{FV}
+
+% Theorems
+\theoremstyle{definition}
+\newtheorem*{exer}{Exercise}
+
+\theoremstyle{remark}
+\newtheorem*{rmk}{Remark}
+
+% Meta
+\title{Notes and exercises from\\\textit{The Lambda Calculus}}
+\author{John Peloquin}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Introduction}
+This document contains notes and exercises from~\cite{barendregt}.
+
+\section*{Chapter~2}
+
+\begin{exer}[2.4.1]
+The following terms have normal forms:
+\begin{enumerate}[itemsep=0pt]
+\item[(i)] \((\lam y.yyy)((\lam ab.a)\I(\S\S))\)
+\item[(ii)] \((\lam yz.zy)((\lam x.xxx)(\lam x.xxx))(\lam w.\I)\)
+\end{enumerate}
+\end{exer}
+\begin{proof}\
+\begin{enumerate}[itemsep=0pt]
+\item[(i)] \((\lam y.yyy)((\lam ab.a)\I(\S\S))=(\lam y.yyy)\I=\I\I\I=\I\)
+\item[(ii)] \((\lam yz.zy)((\lam x.xxx)(\lam x.xxx))(\lam w.\I)=(\lam w.\I)((\lam x.xxx)(\lam x.xxx))=\I\)\qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{exer}[2.4.2]
+The following terms are incompatible:
+\begin{enumerate}[itemsep=0pt]
+\item[(i)] \(\I\inc\K\)
+\item[(ii)] \(\I\inc\S\)
+\item[(iii)] \(xy\inc xx\) (\(x\not\equiv y\))
+\end{enumerate}
+\end{exer}
+\begin{proof}
+By reducing to \(\K\inc\S\) (2.1.33).
+\begin{enumerate}[itemsep=0pt]
+\item[(i)] If \(\I=\K\), then \(\S=\I\S=\I\I\S=\K\K\S=\K\).
+\item[(ii)] If \(\I=\S\), then since \(\I=\S\K\K\) (2.2.1(i)), \(\S=\I\S=\S\K\K\S=\I\K\K\S=\K\K\S=\K\).
+\item[(iii)] If \(xy=xx\), then \(MN=MM\) for all \(M,N\in\Lam\) by rule~\(\xi\) and combinatory completeness (2.1.24). Therefore \(\S=\I\S=\I\I=\I\), which reduces to~(ii).\qedhere
+\end{enumerate}
+\end{proof}
+
+\begin{exer}[2.4.4]
+Application is not associative; in fact, \((xy)z\inc x(yz)\) for distinct \(x,y,z\).
+\end{exer}
+\begin{proof}
+If \((xy)z=x(yz)\), then \((MN)P=M(NP)\) for all \(M,N,P\in\Lam\) by rule~\(\xi\) and combinatory completeness (2.1.24). In particular,
+\[\S=\I\S=((\K\I)\K)\S=(\K(\I\K))\S=\K\K\S=\K\]
+The result follows since \(\K\inc\S\) (2.1.33).
+\end{proof}
+
+\begin{exer}[2.4.6]
+There is no \(F\in\Lam\) such that \(F(MN)=M\) for all \(M,N\in\Lam\).
+\end{exer}
+\begin{proof}
+If there were such an~\(F\), then taking \(M=\I\) and \(N=\Y F\) (2.1.5),\footnote{Here \(\Y F\)~denotes the fixed point of~\(F\) in~2.1.5.}
+\[\I=F(\I(\Y F))=F(\Y F)=\Y F\]
+But this contradicts the fact that \(\Y F\)~has no normal form.
+\end{proof}
+
+\begin{exer}[2.4.7]
+There is \(M\in\Lam\) such that \(MN=MM\) for all \(N\in\Lam\).
+\end{exer}
+\begin{proof}
+This is true if \(M=\lam x.MM\), which is true if \(M=(\lam yx.yy)M\). So we can take \(M=\Y(\lam yx.yy)\) (2.1.5).
+\end{proof}
+
+\begin{exer}[2.4.9]
+\((\lam y.(\lam x.M))N=\lam x.((\lam y.M)N)\) for all \(M,N\in\Lam\), provided \(x\not\equiv y\) and \(x\not\in\FV(N)\).
+\end{exer}
+\begin{proof}
+By \(\beta\)-reduction,
+\[(\lam y.(\lam x.M))N=(\lam x.M)[y\sub N]=\lam x.M[y\sub N]=\lam x.((\lam y.M)N)\qedhere\]
+\end{proof}
+\begin{rmk}
+The hypotheses are necessary. For example if \(x,y,z\) are distinct,
+\[(\lam x.(\lam x.x))y=\lam x.x\ne\lam x.y=\lam x.((\lam x.x)y)\]
+and
+\[(\lam y.(\lam x.y))x=\lam z.x\ne\lam x.x=\lam x.((\lam y.y)x)\]
+\end{rmk}
+
+\begin{exer}[2.4.13] \(\lam x.Mx=M\) for all \(M\in\Lam\) starting with~\(\lam\), provided \(x\not\in\FV(M)\).
+\end{exer}
+\begin{proof}
+If \(M\equiv\lam y.N\), then
+\[\lam x.(\lam y.N)x=\lam x.N[y\sub x]\equiv\lam y.N\equiv M\]
+Note this is justified when \(y\not\equiv x\) because \(x\not\in\FV(N)\), so the only free occurrences of~\(x\) in~\(N[y\sub x]\) correspond to free occurrences of~\(y\) in~\(N\).
+\end{proof}
+\begin{rmk}
+The hypotheses are necessary. For example, \(\lam x.yx\ne x\) and
+\[\lam x.(\lam y.x)x=\lam x.x\ne\lam y.x\]
+\end{rmk}
+
+\begin{exer}[2.4.14]
+\(M\equiv\lam x.x(\lam y.yy)(\lam y.yy)\) is \(I\)-solvable.
+\end{exer}
+\begin{proof}
+\(M(\K(\K\I))=\I\).
+\end{proof}
+
+\begin{exer}[2.4.15]
+We can write down short \(\lambda\)-terms having very long normal forms using the exponentiation combinator on Church numerals (2.2.6).
+\end{exer}
+
+% References
+\begin{thebibliography}{0}
+\bibitem{barendregt} Barendregt, H. \textit{The Lambda Calculus, its Syntax and Semantics.} 2012.
+\end{thebibliography}
+\end{document}
